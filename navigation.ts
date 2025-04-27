@@ -34,6 +34,10 @@ export class Approach implements Point {
   getNavTarget() {
     return this.navTarget
   }
+
+  getNavTargetCoordinates() : {x: number, y: number, z: number} {
+    return this.navTarget.getCoordinates()
+  }
 }
 
 export class NavPoint implements Point {
