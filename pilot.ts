@@ -17,9 +17,8 @@ export class Pilot {
   }
 
   enterFromApproach(approach: Approach){
-
-    this.plane.movement.setMovementType(MOVEMENT_TYPE.CRUISING)
     this.plane.movement.setHeading(this.getHeadingByApproach(approach))
+    this.proceedToRadioNavigation(approach.getNavTarget())
     this.Iui.startPlaneMovementAnimation(this.plane)
   }
 
@@ -29,5 +28,14 @@ export class Pilot {
     const xDifference: number = aCoords.x - bCoords.x
     const yDifference: number = aCoords.y - bCoords.y
     return Math.atan2(yDifference, xDifference)
+  }
+
+  private proceedToRadioNavigation(target: NavPoint) {
+    //Set pilot behavior
+    this.action = ACTION.PROCEED
+    this.navTarget = target
+
+    //Pilot control his aircraft
+    this.plane.movement.setMovementType(MOVEMENT_TYPE.CRUISING)
   }
 }
