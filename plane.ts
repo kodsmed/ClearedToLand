@@ -1,65 +1,12 @@
-class Position {
-  // Properties
-  private latitude: number;
-  private longitude: number;
-  private altitude: number;
-  constructor (latitude: number, longitude: number, altitude: number) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.altitude = altitude;
-  }
+import { Approach, Position } from "./navigation.ts";
+import { STATUS, PLANE_TYPE, PlaneTypeConstants, AIRLINE_CALLSIGNS, MOVEMENT_TYPE, MovementTypeConstants  } from "./enums.ts";
+import { Movement } from "./movement.ts";
 
-  getPosition() {
-    return [this.latitude, this.longitude, this.altitude]
-  }
-
-  move(args:{speed:number, heading:number}) {
-    // calculate and update position
-  }
-}
-
-class Movement {
-  private movementType: MOVEMENT_TYPE;
-  private speed: number;
-  private heading: number;
-  constructor (movementType: MOVEMENT_TYPE, heading?: number) {
-    this.speed = MovementTypeConstants[movementType].speed
-    this.heading = heading || 0;
-    this.movementType = movementType;
-  }
-
-  getMovementType(): MOVEMENT_TYPE {
-    return this.movementType;
-  }
-
-  setMovementType(movementType: MOVEMENT_TYPE): void {
-    this.movementType = movementType;
-    this.speed = MovementTypeConstants[movementType].speed
-  }
-
-  getSpeed(): number {
-    return this.speed;
-  }
-
-  getHeading(): number {
-    return this.heading;
-  }
-
-  setHeading(heading: number): void {
-    this.heading = heading;
-  }
-
-  getMovement(): Movement {
-    return this;
-  }
-}
-
-class Plane {
+export class Plane {
   // Properties
   private id: number;
-  private position: Position;
-  private movement: Movement;
-  private heading: number;
+  position: Position;
+  movement: Movement;
   private fuelMinutes: number;
   private status: STATUS;
   private minRunwayLength: number;
@@ -67,14 +14,12 @@ class Plane {
   private maxTailwind: number;
   private planeModel: PLANE_TYPE;
   private callsign: string;
-  private pilotAI: Pilot;
 
   constructor (args: {id: number, planeModel: PLANE_TYPE, approach: Approach, fuelEmergency?: boolean}) {
-    this.position = args.approach.getPosition();
+    this.position = new Position (args.approach.getCoordinates())
     this.status = STATUS.AIRBORNE;
-    this.movement = new Movement(MOVEMENT_TYPE.CRUISING);
+    this.movement = new Movement(MOVEMENT_TYPE.HOLDING);
     this.id = args.id;
-    this.heading = 0;
     this.fuelMinutes = 0;
     this.minRunwayLength = 0;
     this.maxCrosswind = 0;
@@ -99,9 +44,6 @@ class Plane {
     } else {
       this.fuelMinutes = Math.floor(Math.random() * 50) + 10; // Random fuel minutes between 10 and 60
     }
-
-    this.pilotAI = new Pilot();
-    this.pilotAI.enterFromApproach(args.approach);
   }
 
   idToString(): string {
@@ -110,12 +52,8 @@ class Plane {
     return  ` ${paddedId}`;
   }
 
-  getPosition() {
-    return this.position;
+  getId() : number {
+    return this.id
   }
-
-  move(){
-    this.position.move({speed: this.movement.getSpeed(), heading: this.movement.getHeading()})
-  }
-
 }
+
